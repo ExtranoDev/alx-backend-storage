@@ -1,0 +1,2 @@
+// script lists all documents with key=value in the collection
+db.school.find({name: "Holberton school"})
