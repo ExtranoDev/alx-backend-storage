@@ -5,7 +5,7 @@ Create a store method
 """
 import redis
 import uuid
-from typing import Union
+from typing import Union, Callable
 
 
 class Cache:
@@ -22,8 +22,34 @@ class Cache:
 
     def store(self, data: Union[str, bytes, int, float]) -> str:
         """
-        Method that takes a data argument and returns a string
+        Method that takes a data argument and returns a key as string
+        creates key using the uuid libary
+        arg: data: to be inserted with created key
         """
         key = str(uuid.uuid1())
         self._redis.mset({key: data})
         return key
+
+    def get(self, key: str, fn: Callable = None):
+        """
+        method that take a key string argument
+        and an optional Callable argument named fn
+
+        fn will be used to convert the data back to the desired format
+        """
+        if fn:
+            return fn(self._redis.get(key))
+        return self._redis.get(key)
+
+    def get_str(self, key: str) -> str:
+        """
+        converts the data to string
+        """
+        return self._redis.get(key).decode('utf-8')
+
+    def get_int(self, key: str) -> int:
+        """
+        converts data to integer
+        """
+        data = self._redis.get(key)
+        return int.from_bytes(data)
