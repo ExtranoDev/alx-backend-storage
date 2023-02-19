@@ -22,6 +22,7 @@ def call_history(method: Callable) -> Callable:
         return output
     return wrapper
 
+
 def count_calls(method: Callable) -> Callable:
     """count the number of time a function is called"""
     key = method.__qualname__
@@ -81,3 +82,22 @@ class Cache:
         """
         data = self._redis.get(key)
         return int.from_bytes(data)
+
+
+def replay(fn: Callable):
+    """"""
+    r = redis.Redis()
+    fn_name = fn.__qualname__
+    data = r.get(fn_name)
+    try:
+        data = int(data.decode('utf-8'))
+    except Exception:
+        data = 0
+    print("{} was called {} times:".format(fn_name, data))
+    inputs = r.lrange("{}:inputs".format(fn_name), 0, -1)
+    outputs = r.lrange("{}:outputs".format(fn_name), 0, -1)
+    for inp, out in zip(inputs, outputs):
+        inp = inp.decode("utf-8")
+        out = out.decode("utf-8")
+
+        print("{}(*{}) -> {}".format(fn_name, inp, out))
