@@ -85,7 +85,7 @@ class Cache:
 
 
 def replay(fn: Callable):
-    """"""
+    """a function to display the history of calls of a particular function"""
     r = redis.Redis()
     fn_name = fn.__qualname__
     data = r.get(fn_name)
