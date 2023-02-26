@@ -5,31 +5,14 @@ URL and returns it
 """
 import requests
 import redis
-from functools import wraps
-
-
 r = redis.Redis()
+count = 0
 
 
-def count_url_visit(method):
-    """count number of times a url was visited"""
-    @wraps(method)
-    def wrapper(url):
-        """wrapper function"""
-        url_key = url
-        data = r.get(url_key)
-        if data:
-            return data.decode("utf-8")
-        count_access = "count:{}".format(url)
-        html = method(url)
-        r.incr(count_access)
-        r.setex(url_key, 10, hmtl)
-        return html
-    return wrapper
-
-
-@count_url_visit
 def get_page(url: str) -> str:
     """ uses the requests to obtain content of a URL and returns it"""
-    html_content = requests.get(url)
+    r.set(f"cached:{url}", count)
+    resp = requests.get(url)
+    r.incr(f"count:{url}")
+    r.setex(f"cached:{url}", 10, r.get(f"cached:{url}"))
     return html_content.text
