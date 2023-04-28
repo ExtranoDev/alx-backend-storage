@@ -1,6 +1,6 @@
 -- script that creates a stored procedure
 -- computes and store the average weighted score for all students
-DROP PROCEDURE IF EXISTS ComputeAverageWeightedScoreForUsers
+DROP PROCEDURE IF EXISTS ComputeAverageWeightedScoreForUsers;
 DELIMITER $$
 CREATE PROCEDURE ComputeAverageWeightedScoreForUsers()
 BEGIN
@@ -11,8 +11,7 @@ BEGIN
         JOIN projects AS P ON C.project_id=P.id
         GROUP BY U.id)
     AS WA
-    SET U.average_score = WA.w_avg
-    WHERE U.id=WA.id;
+    SET U.average_score = WA.w_avg WHERE U.id=WA.id;
 END
 $$
 DELIMITER ;
