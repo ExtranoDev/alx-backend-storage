@@ -15,4 +15,7 @@ def get_page(url: str) -> str:
     resp = requests.get(url)
     r.incr(f"count:{url}")
     r.setex(f"cached:{url}", 10, r.get(f"cached:{url}"))
-    return html_content.text
+    return resp.text
+
+if __name__ == "__main__":
+	get_page('http://slowwly.robertomurray.co.uk')
